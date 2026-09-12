@@ -3,6 +3,8 @@ import { getEntriesInRange } from '@/lib/db';
 import { CATEGORY_SLUGS } from '@/lib/categories';
 import { addDays, parseISODate, rollingLast7Days, toISODate } from '@/lib/week';
 
+export const dynamic = 'force-dynamic';
+
 // Read-only endpoint meant to be fetched by URL alone (no browser session),
 // so an external AI assistant can pull the week's entries directly.
 export async function GET(req: NextRequest) {
