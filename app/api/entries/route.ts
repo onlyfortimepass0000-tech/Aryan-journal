@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createEntry, getEntriesInRange } from '@/lib/store';
+import { createEntry, getEntriesInRange } from '@/lib/db';
 import { CATEGORY_SLUGS, isCategorySlug } from '@/lib/categories';
 import { addDays, parseISODate, startOfWeekMonday, toISODate } from '@/lib/week';
 
