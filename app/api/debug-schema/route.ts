@@ -6,10 +6,14 @@ export async function GET() {
     process.env.SUPABASE_ANON_KEY ||
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0dnV1ZXJ1dXJoc2dxcG12ZWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMTkzMTksImV4cCI6MjEwNDc5NTMxOX0.GEZ4QQxe_VgvZH-OKOOSuk2C3EIssgqkmIjtMwTsxuU';
 
-  const res = await fetch(`${url}/rest/v1/`, {
+  const res = await fetch(`${url}/rest/v1/entries?select=id&limit=1`, {
     headers: { apikey: key, Authorization: `Bearer ${key}` },
     cache: 'no-store',
   });
   const body = await res.text();
-  return NextResponse.json({ status: res.status, body: body.slice(0, 3000) });
+  return NextResponse.json({
+    status: res.status,
+    headers: Object.fromEntries(res.headers.entries()),
+    body: body.slice(0, 3000),
+  });
 }
