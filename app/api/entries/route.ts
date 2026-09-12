@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createEntry, getEntriesInRange } from '@/lib/db';
+import { createEntry, getEntriesInRange } from '@/lib/store';
 import { CATEGORY_SLUGS, isCategorySlug } from '@/lib/categories';
 import { addDays, parseISODate, startOfWeekMonday, toISODate } from '@/lib/week';
 
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
 
   const entries = await getEntriesInRange(weekStart, weekEndExclusive);
 
-  const grouped: Record<string, { id: number; text: string; createdAt: string }[]> = {};
+  const grouped: Record<string, { id: string; text: string; createdAt: string }[]> = {};
   for (const slug of CATEGORY_SLUGS) grouped[slug] = [];
   for (const entry of entries) {
     grouped[entry.category].push({ id: entry.id, text: entry.text, createdAt: entry.createdAt });

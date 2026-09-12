@@ -7,33 +7,53 @@ This app only handles capture and read-out — no grading logic lives here.
 
 ## Stack
 
-- Next.js 14 (App Router) on Vercel
-- Vercel Postgres for storage (table is created automatically on first request)
+- Next.js 16 (App Router) on Vercel
+- **Storage: this GitHub repo itself.** Entries are kept as a single JSON file
+  (`data/entries.json`) on a dedicated `data` branch, updated with a commit through the
+  GitHub API on every save/edit/delete. No hosted database, nothing to provision — git
+  history is the datastore.
 - Tailwind CSS
 - No user accounts — the whole app (UI + API) is gated by one shared secret
+
+## Why git instead of a database
+
+Vercel Postgres/KV require provisioning a separate storage resource, which was causing
+friction. This app is single-user and low-volume (a few short entries a day), so a JSON
+file committed to git is plenty — and it comes with free versioning and no external
+service to sign up for.
+
+Writes go to a `data` branch rather than `main` so that saving a journal entry doesn't
+trigger a Vercel rebuild of the production deployment every time (`vercel.json` explicitly
+disables deployments for the `data` branch).
 
 ## Local development
 
 ```bash
 npm install
 cp .env.example .env
-# set ACCESS_TOKEN, and POSTGRES_URL if you want to hit a real database locally
+# fill in ACCESS_TOKEN, GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO
 npm run dev
 ```
 
-Without `POSTGRES_URL` set, database calls will fail — either link a local dev database
-(`vercel env pull` after linking the project) or point `POSTGRES_URL` at any Postgres instance.
-
 ## Deploying to Vercel
 
-1. Create a new Vercel project from this repo.
-2. Add **Vercel Postgres** storage to the project (Storage tab → Postgres). This wires up
-   `POSTGRES_URL` and friends automatically.
-3. Set the `ACCESS_TOKEN` environment variable in Project Settings → Environment Variables.
-4. Deploy.
+1. Create a new Vercel project from this repo. When Vercel's "New Project" screen asks for
+   a **Project Name**, it must be lowercase and can't contain `---` — e.g. `aryan-journal`.
+2. Create a GitHub **personal access token** the app will use to commit entries:
+   - GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
+   - Repository access: **Only select repositories** → this repo
+   - Permissions → Repository permissions → **Contents: Read and write**
+   - Generate, copy the token
+3. In Vercel Project Settings → Environment Variables, set:
+   - `ACCESS_TOKEN` — any secret string, this is your app password
+   - `GITHUB_TOKEN` — the token from step 2
+   - `GITHUB_OWNER` — your GitHub username/org (e.g. `onlyfortimepass0000-tech`)
+   - `GITHUB_REPO` — this repo's name (e.g. `Aryan-journal`)
+4. Deploy. The `data` branch and `data/entries.json` are created automatically on first
+   save if they don't already exist.
 
-After deploy you have two things to hand to the grading AI assistant: the deployed URL and the
-token, combined into:
+After deploy you have two things to hand to the grading AI assistant: the deployed URL and
+the `ACCESS_TOKEN`, combined into:
 
 ```
 https://<app>.vercel.app/api/week-summary?token=XXXX

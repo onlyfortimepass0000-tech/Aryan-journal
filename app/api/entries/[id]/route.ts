@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { deleteEntry, updateEntry } from '@/lib/db';
+import { deleteEntry, updateEntry } from '@/lib/store';
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id: idParam } = await params;
-  const id = Number(idParam);
-  if (!Number.isInteger(id)) {
+  const { id } = await params;
+  if (!id) {
     return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
   }
 
@@ -22,9 +21,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id: idParam } = await params;
-  const id = Number(idParam);
-  if (!Number.isInteger(id)) {
+  const { id } = await params;
+  if (!id) {
     return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
   }
 
