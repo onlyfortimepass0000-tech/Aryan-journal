@@ -7,8 +7,9 @@ This app only handles capture and read-out — no grading logic lives here.
 
 ## Stack
 
-- Next.js 14 (App Router) on Vercel
-- Vercel Postgres for storage (table is created automatically on first request)
+- Next.js 16 (App Router) on Vercel
+- Storage: Supabase Postgres, accessed directly over its REST API (no client SDK, no
+  extra dependency)
 - Tailwind CSS
 - No user accounts — the whole app (UI + API) is gated by one shared secret
 
@@ -17,23 +18,25 @@ This app only handles capture and read-out — no grading logic lives here.
 ```bash
 npm install
 cp .env.example .env
-# set ACCESS_TOKEN, and POSTGRES_URL if you want to hit a real database locally
+# fill in ACCESS_TOKEN, SUPABASE_URL, SUPABASE_ANON_KEY
 npm run dev
 ```
 
-Without `POSTGRES_URL` set, database calls will fail — either link a local dev database
-(`vercel env pull` after linking the project) or point `POSTGRES_URL` at any Postgres instance.
-
 ## Deploying to Vercel
 
-1. Create a new Vercel project from this repo.
-2. Add **Vercel Postgres** storage to the project (Storage tab → Postgres). This wires up
-   `POSTGRES_URL` and friends automatically.
-3. Set the `ACCESS_TOKEN` environment variable in Project Settings → Environment Variables.
-4. Deploy.
+1. Create a new Vercel project from this repo. On the "Project Name" field, it must be
+   lowercase and can't contain `---` — e.g. `aryan-journal`.
+2. In Project Settings → Environment Variables, set:
+   - `ACCESS_TOKEN` — any secret string of your choosing; this is your app password
+   - `SUPABASE_URL` and `SUPABASE_ANON_KEY` — connection details for the `entries` table
+3. Deploy.
 
-After deploy you have two things to hand to the grading AI assistant: the deployed URL and the
-token, combined into:
+No account creation or token generation is needed for storage — the Supabase project and
+its `entries` table already exist; you only need to paste the two connection values above
+into Vercel once.
+
+After deploy you have two things to hand to the grading AI assistant: the deployed URL and
+the `ACCESS_TOKEN`, combined into:
 
 ```
 https://<app>.vercel.app/api/week-summary?token=XXXX

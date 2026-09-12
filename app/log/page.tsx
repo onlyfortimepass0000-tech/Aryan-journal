@@ -5,7 +5,7 @@ import CategoryTabs from '@/components/CategoryTabs';
 import { CATEGORIES, type CategorySlug } from '@/lib/categories';
 
 interface EntryRow {
-  id: number;
+  id: string;
   text: string;
   createdAt: string;
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { CATEGORIES } from '@/lib/categories';
 
 interface EntryRow {
-  id: number;
+  id: string;
   text: string;
   createdAt: string;
 }
@@ -30,7 +30,7 @@ function formatRange(start: string, end: string) {
 
 export default function WeekPage() {
   const [data, setData] = useState<WeekData | null>(null);
-  const [editing, setEditing] = useState<{ id: number; text: string } | null>(null);
+  const [editing, setEditing] = useState<{ id: string; text: string } | null>(null);
 
   async function load(weekStart?: string) {
     const url = weekStart ? `/api/entries?weekStart=${weekStart}` : '/api/entries';
@@ -42,7 +42,7 @@ export default function WeekPage() {
     load();
   }, []);
 
-  async function handleDelete(id: number) {
+  async function handleDelete(id: string) {
     if (!confirm('Delete this entry?')) return;
     await fetch(`/api/entries/${id}`, { method: 'DELETE' });
     load(data?.weekStart);
