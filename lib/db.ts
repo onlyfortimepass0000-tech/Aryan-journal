@@ -11,24 +11,16 @@ export interface Entry {
 }
 
 // Dedicated Supabase project for this app only (separate from any other
-// project/database). Env vars override these if set, but nothing needs to be
-// configured for the app to work out of the box.
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://dtvuueruurhsgqpmvehp.supabase.co';
-const SUPABASE_ANON_KEY =
-  process.env.SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0dnV1ZXJ1dXJoc2dxcG12ZWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMTkzMTksImV4cCI6MjEwNDc5NTMxOX0.GEZ4QQxe_VgvZH-OKOOSuk2C3EIssgqkmIjtMwTsxuU';
+// project/database). Read from env vars, not hardcoded: this is a public
+// repo, so the key must never be committed to it.
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
 interface EntryRow {
   id: string;
   category: CategorySlug;
   text: string;
   created_at: string;
-}
-
-function assertConfigured(): void {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    throw new Error('Missing Supabase configuration. Set SUPABASE_URL and SUPABASE_ANON_KEY.');
-  }
 }
 
 function restUrl(path: string): string {
@@ -54,7 +46,6 @@ function toEntry(row: EntryRow): Entry {
 }
 
 export async function getEntriesInRange(start: Date, endExclusive: Date): Promise<Entry[]> {
-  assertConfigured();
   const params = new URLSearchParams({
     select: 'id,category,text,created_at',
     created_at: `gte.${start.toISOString()}`,
@@ -73,7 +64,6 @@ export async function getEntriesInRange(start: Date, endExclusive: Date): Promis
 }
 
 export async function createEntry(category: CategorySlug, text: string): Promise<Entry> {
-  assertConfigured();
   const res = await fetch(restUrl('/entries'), {
     method: 'POST',
     headers: restHeaders({ Prefer: 'return=representation' }),
@@ -87,7 +77,6 @@ export async function createEntry(category: CategorySlug, text: string): Promise
 }
 
 export async function updateEntry(id: string, text: string): Promise<Entry | null> {
-  assertConfigured();
   const res = await fetch(`${restUrl('/entries')}?id=eq.${id}`, {
     method: 'PATCH',
     headers: restHeaders({ Prefer: 'return=representation' }),
@@ -101,7 +90,6 @@ export async function updateEntry(id: string, text: string): Promise<Entry | nul
 }
 
 export async function deleteEntry(id: string): Promise<boolean> {
-  assertConfigured();
   const res = await fetch(`${restUrl('/entries')}?id=eq.${id}`, {
     method: 'DELETE',
     headers: restHeaders({ Prefer: 'return=representation' }),

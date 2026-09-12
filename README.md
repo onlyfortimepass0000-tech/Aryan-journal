@@ -11,7 +11,7 @@ This app only handles capture and read-out — no grading logic lives here.
 - Storage: a dedicated Supabase Postgres project (separate from any other project/database),
   accessed directly over its REST API — no client SDK, no dependency
 - Tailwind CSS
-- No accounts, no login, no access token — nothing to configure before it works
+- No accounts, no login, no access token
 
 ## Local development
 
@@ -20,15 +20,18 @@ npm install
 npm run dev
 ```
 
-No `.env` file is required — the app has working Supabase connection details built in for
-its own dedicated project. `.env.example` documents the two variables you'd set only if you
-ever wanted to point it at a different database.
+Copy `.env.example` to `.env` and fill in `SUPABASE_URL` / `SUPABASE_ANON_KEY` for the
+dedicated project below.
 
 ## Deploying to Vercel
 
-Push to `main` and deploy — that's it. There's nothing to configure: no environment
-variables, no tokens, no database setup. The one thing to watch for is Vercel's own
-"Project Name" field on the New Project screen, which must be lowercase with no `---`
+1. Set `SUPABASE_URL` and `SUPABASE_ANON_KEY` in Project Settings → Environment Variables,
+   pointing at the dedicated project below (the same two values from local dev). No account
+   to create, no token to generate — these are just the two connection values for a project
+   that already exists and already has its table set up.
+2. Deploy.
+
+Vercel's own "Project Name" field on the New Project screen must be lowercase with no `---`
 (e.g. `aryan-journal`) — unrelated to this app, just Vercel's naming rule.
 
 ## The read API
