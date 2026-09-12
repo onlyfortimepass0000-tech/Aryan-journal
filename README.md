@@ -8,41 +8,36 @@ This app only handles capture and read-out — no grading logic lives here.
 ## Stack
 
 - Next.js 16 (App Router) on Vercel
-- Storage: Supabase Postgres, accessed directly over its REST API (no client SDK, no
-  extra dependency)
+- Storage: a dedicated Supabase Postgres project (separate from any other project/database),
+  accessed directly over its REST API — no client SDK, no dependency
 - Tailwind CSS
-- No user accounts — the whole app (UI + API) is gated by one shared secret
+- No accounts, no login, no access token — nothing to configure before it works
 
 ## Local development
 
 ```bash
 npm install
-cp .env.example .env
-# fill in ACCESS_TOKEN, SUPABASE_URL, SUPABASE_ANON_KEY
 npm run dev
 ```
 
+No `.env` file is required — the app has working Supabase connection details built in for
+its own dedicated project. `.env.example` documents the two variables you'd set only if you
+ever wanted to point it at a different database.
+
 ## Deploying to Vercel
 
-1. Create a new Vercel project from this repo. On the "Project Name" field, it must be
-   lowercase and can't contain `---` — e.g. `aryan-journal`.
-2. In Project Settings → Environment Variables, set:
-   - `ACCESS_TOKEN` — any secret string of your choosing; this is your app password
-   - `SUPABASE_URL` and `SUPABASE_ANON_KEY` — connection details for the `entries` table
-3. Deploy.
+Push to `main` and deploy — that's it. There's nothing to configure: no environment
+variables, no tokens, no database setup. The one thing to watch for is Vercel's own
+"Project Name" field on the New Project screen, which must be lowercase with no `---`
+(e.g. `aryan-journal`) — unrelated to this app, just Vercel's naming rule.
 
-No account creation or token generation is needed for storage — the Supabase project and
-its `entries` table already exist; you only need to paste the two connection values above
-into Vercel once.
-
-After deploy you have two things to hand to the grading AI assistant: the deployed URL and
-the `ACCESS_TOKEN`, combined into:
+## The read API
 
 ```
-https://<app>.vercel.app/api/week-summary?token=XXXX
+GET https://<app>.vercel.app/api/week-summary
 ```
 
-That endpoint is fetchable by URL alone — no login flow — and returns:
+Fetchable by URL alone, returns:
 
 ```json
 {
@@ -53,11 +48,17 @@ That endpoint is fetchable by URL alone — no login flow — and returns:
 }
 ```
 
-Pass `start=YYYY-MM-DD` to fetch a specific week; omit it to get the most recent 7 days.
+Pass `?start=YYYY-MM-DD` to fetch a specific week; omit it for the most recent 7 days.
 
 ## Using the app
 
 - **Log** tab — pick a category, type a free-text entry, save. Auto-timestamped.
 - **Week** tab — this week's entries grouped by category, most recent first, with Prev/Next
   navigation to browse history and inline edit/delete.
-- First visit prompts for the access token, which is then stored in an httpOnly cookie.
+
+## A note on privacy
+
+There's no login and no access token, by design — the app is open to anyone who has the
+deployed URL. If that ever becomes a concern (e.g. the URL gets shared or indexed), the
+right fix is Vercel's own deployment protection (password or Vercel Authentication) on the
+project, rather than reintroducing an app-level login.

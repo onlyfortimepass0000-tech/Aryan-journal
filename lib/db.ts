@@ -10,8 +10,13 @@ export interface Entry {
   createdAt: string;
 }
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+// Dedicated Supabase project for this app only (separate from any other
+// project/database). Env vars override these if set, but nothing needs to be
+// configured for the app to work out of the box.
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://dtvuueruurhsgqpmvehp.supabase.co';
+const SUPABASE_ANON_KEY =
+  process.env.SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0dnV1ZXJ1dXJoc2dxcG12ZWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMTkzMTksImV4cCI6MjEwNDc5NTMxOX0.GEZ4QQxe_VgvZH-OKOOSuk2C3EIssgqkmIjtMwTsxuU';
 
 interface EntryRow {
   id: string;

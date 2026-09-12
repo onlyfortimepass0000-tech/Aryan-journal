@@ -6,11 +6,6 @@ import { addDays, parseISODate, rollingLast7Days, toISODate } from '@/lib/week';
 // Read-only endpoint meant to be fetched by URL alone (no browser session),
 // so an external AI assistant can pull the week's entries directly.
 export async function GET(req: NextRequest) {
-  const token = req.nextUrl.searchParams.get('token') ?? req.headers.get('x-access-token');
-  if (!token || token !== process.env.ACCESS_TOKEN) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   const startParam = req.nextUrl.searchParams.get('start');
   let weekStart: Date;
   let weekEndInclusive: Date;
